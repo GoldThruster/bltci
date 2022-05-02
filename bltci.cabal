@@ -25,7 +25,9 @@ source-repository head
 
 library
   exposed-modules:
-      Lib
+      Ast
+      Lexer
+      Parser
   other-modules:
       Paths_bltci
   hs-source-dirs:
