@@ -2,6 +2,7 @@ module Lexer
     (   identifier
     ,   integer
     ,   equalOp
+    ,   addOp
     ) where
 
 import Text.Parsec
@@ -22,6 +23,9 @@ integer = T.integer boltLexer
 ------ OPERATORS ------
 equalOp :: Parser ()
 equalOp = T.reservedOp boltLexer "="
+
+addOp :: Parser ()
+addOp = T.reservedOp boltLexer "+"
 
 ------ TOKEN GEN ------
 boltDef :: LanguageDef u

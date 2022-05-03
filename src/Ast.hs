@@ -1,6 +1,9 @@
 module Ast 
     ( Expression0 (..)
+    , Expression1 (..)
+    , Expression (..)
     , Assignment (..)
+    , BinOperation (..)
     ) where
 
 data Expression0
@@ -8,6 +11,12 @@ data Expression0
     | AssignmentExpr Assignment
     deriving Show
 
+newtype Expression1
+    = AddExpr (BinOperation Expression0) deriving Show
+
 data Assignment = Assignment {id :: String, value :: Expression} deriving Show
-type Expression = Expression0
 type Literal = Integer
+
+data BinOperation a = BinOperation {termA :: a, termB :: a} deriving Show
+
+data Expression = Expr0 Expression0 | Expr1 Expression1 deriving Show
