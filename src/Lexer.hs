@@ -7,19 +7,20 @@ module Lexer
 import Text.Parsec
 import Text.Parsec.Language
 import qualified Text.Parsec.Token as T
+import Text.Parsec.String (Parser)
 
 
 
 ------ WORDS ------
-identifier :: Parsec String u String
+identifier :: Parser String
 identifier = T.identifier boltLexer
 
 ------ LITERALS ------
-integer :: Parsec String u Integer
+integer :: Parser Integer
 integer = T.integer boltLexer
 
 ------ OPERATORS ------
-equalOp :: Parsec String u ()
+equalOp :: Parser ()
 equalOp = T.reservedOp boltLexer "="
 
 ------ TOKEN GEN ------
