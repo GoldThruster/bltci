@@ -1,7 +1,7 @@
 module Evaluator
-(   reduce
-,   eval
-) where
+    (   reduce
+    ,   eval
+    ) where
 
 import Ast
 
@@ -13,8 +13,9 @@ reduce0 (WrappedExpr expr) = reduce expr
 reduce0 x = Expr0 x
 
 reduce1 :: Expression1 -> Expression
-reduce1 (AddExpr (BinOperation (LitExpr a) (LitExpr b))) =  Expr0 (LitExpr (a + b))
-reduce1 (AddExpr (BinOperation a b)) = Expr1 (AddExpr (BinOperation (WrappedExpr (reduce0 a)) (WrappedExpr (reduce0 b))))
+reduce1 (AddExpr (BinOperation (LitExpr a) (Expr0 (LitExpr b)))) =  Expr0 (LitExpr (a + b))
+reduce1 (AddExpr (BinOperation (LitExpr a) b)) =  Expr1 (AddExpr (BinOperation (LitExpr a) (reduce b)))
+reduce1 (AddExpr (BinOperation a b)) = Expr1 (AddExpr (BinOperation (WrappedExpr (reduce0 a)) (reduce b)))
 
 reduce :: Expression -> Expression
 reduce (Expr0 e0) = reduce0 e0

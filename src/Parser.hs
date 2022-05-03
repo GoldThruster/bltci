@@ -2,9 +2,8 @@
 {-# HLINT ignore "Use <$>" #-}
 
 module Parser
-    (
-        assignment,
-        expr
+    (  assignment
+    ,   expr
     ) where
 
 import Text.Parsec
@@ -28,7 +27,7 @@ addition :: Parser (BinOperation Expression0)
 addition = do
     termA <- expr0
     L.addOp
-    termB <- expr0
+    termB <- expr
     return (BinOperation termA termB)
 
 expr0 :: Parser Expression0
