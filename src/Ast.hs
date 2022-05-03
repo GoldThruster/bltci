@@ -9,6 +9,7 @@ module Ast
 data Expression0
     = LitExpr Literal
     | AssignmentExpr Assignment
+    | WrappedExpr Expression
     deriving Show
 
 newtype Expression1
