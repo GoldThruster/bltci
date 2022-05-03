@@ -3,22 +3,27 @@
 
 module Parser
     (
-        assignment
+        assignment, 
+        expr
     ) where
 
 import Text.Parsec
 
 import qualified Lexer as L
-import qualified Ast as A
+import Ast
 
 
 
 
-assignment :: Parsec String u A.Assignment
+assignment :: Parsec String u Assignment
 assignment = do
     id <- L.identifier
-    _ <- L.equalOp
-    val <- value
-    return (A.Assignment id val)
+    L.equalOp
+    val <- expr
+    return (Assignment id val)
 
-value = L.integer
+expr0 = (AssignmentExpr <$> assignment) <|> (LitExpr <$> literal)
+
+expr = expr0
+
+literal = L.integer

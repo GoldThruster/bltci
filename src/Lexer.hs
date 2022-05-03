@@ -17,8 +17,9 @@ identifier = T.identifier boltLexer
 ------ LITERALS ------
 integer :: Parsec String u Integer
 integer = T.integer boltLexer
-equalOp :: Parsec String u ()
 
+------ OPERATORS ------
+equalOp :: Parsec String u ()
 equalOp = T.reservedOp boltLexer "="
 
 ------ TOKEN GEN ------
@@ -31,8 +32,8 @@ boltDef = T.LanguageDef
     , T.identStart = letter <|> char '_'
     , T.identLetter = letter <|> char '_' <|> digit
     , T.opStart = oneOf []
-    , T.opLetter = oneOf "="
-    , T.reservedOpNames = ["="]
+    , T.opLetter = oneOf "=+"
+    , T.reservedOpNames = ["=", "+"]
     , T.reservedNames = []
     , T.caseSensitive = True
     }
