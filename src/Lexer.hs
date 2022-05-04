@@ -1,8 +1,14 @@
 module Lexer
-    (   identifier
+    (   -- Words --
+        identifier
+        -- Literals --
     ,   integer
+        -- Operators --
     ,   equalOp
     ,   addOp
+    ,   removeOp
+    ,   negateOp
+        -- Symbols --
     ,   parens
     ) where
 
@@ -28,9 +34,15 @@ equalOp = T.reservedOp boltLexer "="
 addOp :: Parser ()
 addOp = T.reservedOp boltLexer "+"
 
+removeOp :: Parser ()
+removeOp = T.reservedOp boltLexer "-"
+
+negateOp :: Parser Char
+negateOp = char '-'
+
 ------ SYMBOLS ------
 parens :: Parsec String u a -> Parsec String u a
-parens = T.parens boltLexer 
+parens = T.parens boltLexer
 
 ------ TOKEN GEN ------
 boltDef :: LanguageDef u
@@ -43,7 +55,7 @@ boltDef = T.LanguageDef
     , T.identLetter = letter <|> char '_' <|> digit
     , T.opStart = oneOf []
     , T.opLetter = oneOf "=+"
-    , T.reservedOpNames = ["=", "+"]
+    , T.reservedOpNames = ["=", "+", "-"]
     , T.reservedNames = []
     , T.caseSensitive = True
     }

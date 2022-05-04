@@ -6,9 +6,13 @@ module Evaluator
 import Ast
 
 reduceOp :: Operation -> Expression
-reduceOp (AddOp (LitExpr a) (LitExpr b)) = LitExpr (sumLit a b)
-reduceOp (AddOp a b)                     = OpExpr $ AddOp (reduce a) (reduce b)
-reduceOp (BindOp id val)                 = OpExpr $ BindOp id (reduce val)
+reduceOp (BindOp id val)                  = OpExpr $ BindOp id (reduce val)
+reduceOp (AddOp (LitExpr a) (LitExpr b))  = LitExpr (sumLit a b)
+reduceOp (AddOp a b)                      = OpExpr $ AddOp (reduce a) (reduce b)
+reduceOp (RemvOp (LitExpr a) (LitExpr b)) = LitExpr (subLit a b)
+reduceOp (RemvOp a b)                     = OpExpr $ RemvOp (reduce a) (reduce b)
+reduceOp (NegOp (LitExpr x))              = LitExpr (negLit x)
+reduceOp (NegOp x)                        = OpExpr $ NegOp (reduce x)
 
 reduce :: Expression -> Expression
 reduce lit@(LitExpr _) = lit
@@ -22,3 +26,9 @@ eval expr = if reduced == expr then expr else eval reduced
 ----- HELPERS -----
 sumLit :: Literal -> Literal -> Literal
 sumLit (IntLit a) (IntLit b) = IntLit (a + b)
+
+subLit :: Literal -> Literal -> Literal
+subLit (IntLit a) (IntLit b) = IntLit (a - b)
+
+negLit :: Literal -> Literal
+negLit (IntLit x) = IntLit (-x)

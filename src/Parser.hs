@@ -1,6 +1,3 @@
-{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
-{-# HLINT ignore "Use <$>" #-}
-
 module Parser
     (   expr
     ) where
@@ -16,21 +13,30 @@ binding :: Parser Operation
 binding = do
     id <- L.identifier
     L.equalOp
-    val <- expr
-    return $ BindOp id val
+    BindOp id <$> expr
 
 addition :: Parser Operation
 addition = do
     termA <- expr0
     L.addOp
-    termB <- expr
-    return $ AddOp termA termB
+    AddOp termA <$> expr
+
+removal :: Parser Operation
+removal = do
+    termA <- expr0
+    L.removeOp
+    RemvOp termA <$> expr
+
+negation :: Parser Operation
+negation = do
+    L.negateOp
+    NegOp <$> expr0
 
 expr0 :: Parser Expression
-expr0 = (LitExpr <$> literal) <|> wrapped <|> (OpExpr <$> binding)
+expr0 = (LitExpr <$> literal) <|> wrapped <|> (OpExpr <$> (binding <|> negation))
 
 expr1 :: Parser Expression
-expr1 = OpExpr <$> addition
+expr1 = OpExpr <$> (try addition <|> removal)
 
 expr :: Parser Expression
 expr = try expr1 <|> expr0
