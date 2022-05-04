@@ -2,42 +2,41 @@
 {-# HLINT ignore "Use <$>" #-}
 
 module Parser
-    (  assignment
-    ,   expr
+    (   expr
     ) where
 
 import Text.Parsec
 import Text.Parsec.String (Parser)
 
 import qualified Lexer as L
-import Ast
+import Ast hiding (value)
 
 
-
-
-
-assignment :: Parser Assignment
-assignment = do
+binding :: Parser Operation
+binding = do
     id <- L.identifier
     L.equalOp
     val <- expr
-    return (Assignment id val)
+    return $ BindOp id val
 
-addition :: Parser (BinOperation Expression0)
+addition :: Parser Operation
 addition = do
     termA <- expr0
     L.addOp
     termB <- expr
-    return (BinOperation termA termB)
+    return $ AddOp termA termB
 
-expr0 :: Parser Expression0
-expr0 = (AssignmentExpr <$> assignment) <|> (LitExpr <$> literal)
+expr0 :: Parser Expression
+expr0 = (LitExpr <$> literal) <|> wrapped <|> (OpExpr <$> binding)
 
-expr1 :: Parser Expression1
-expr1 = AddExpr <$> addition
+expr1 :: Parser Expression
+expr1 = OpExpr <$> addition
 
 expr :: Parser Expression
-expr = (Expr1 <$> try expr1) <|> (Expr0 <$> expr0)
+expr = try expr1 <|> expr0
 
-literal :: Parser Integer
-literal = L.integer
+literal :: Parser Literal
+literal = IntLit <$> L.integer
+
+wrapped :: Parser Expression
+wrapped = L.parens expr

@@ -1,23 +1,13 @@
 module Ast 
-    ( Expression0 (..)
-    , Expression1 (..)
-    , Expression (..)
-    , Assignment (..)
-    , BinOperation (..)
+    (   Expression (..)
+    ,   Literal (..)
+    ,   Operation (..)
     ) where
 
-data Expression0
-    = LitExpr Literal
-    | AssignmentExpr Assignment
-    | WrappedExpr Expression
-    deriving Show
+newtype Literal = IntLit Integer deriving (Show, Eq)
+data Operation 
+    = AddOp Expression Expression
+    | BindOp String Expression 
+    deriving (Show, Eq)
 
-newtype Expression1
-    = AddExpr (BinOperation Expression0) deriving Show
-
-data Assignment = Assignment {id :: String, value :: Expression} deriving Show
-type Literal = Integer
-
-data BinOperation a = BinOperation {termA :: a, termB :: Expression} deriving Show
-
-data Expression = Expr0 Expression0 | Expr1 Expression1 deriving Show
+data Expression = LitExpr Literal | OpExpr Operation deriving (Show, Eq)

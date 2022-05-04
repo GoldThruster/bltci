@@ -3,6 +3,7 @@ module Lexer
     ,   integer
     ,   equalOp
     ,   addOp
+    ,   parens
     ) where
 
 import Text.Parsec
@@ -26,6 +27,10 @@ equalOp = T.reservedOp boltLexer "="
 
 addOp :: Parser ()
 addOp = T.reservedOp boltLexer "+"
+
+------ SYMBOLS ------
+parens :: Parsec String u a -> Parsec String u a
+parens = T.parens boltLexer 
 
 ------ TOKEN GEN ------
 boltDef :: LanguageDef u

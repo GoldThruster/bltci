@@ -1,8 +1,8 @@
 module Main where
 
 import Text.Parsec
-import Parser
 import Evaluator
+import Parser
 import qualified Ast
 
 main :: IO ()
