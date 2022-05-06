@@ -7,9 +7,9 @@ module Lexer
     ,   equalOp
     ,   addOp
     ,   removeOp
-    ,   negateOp
         -- Symbols --
     ,   parens
+    ,   boltLexer
     ) where
 
 import Text.Parsec
@@ -25,7 +25,7 @@ identifier = T.identifier boltLexer
 
 ------ LITERALS ------
 integer :: Parser Integer
-integer = T.integer boltLexer
+integer = T.natural boltLexer
 
 ------ OPERATORS ------
 equalOp :: Parser ()
@@ -36,9 +36,6 @@ addOp = T.reservedOp boltLexer "+"
 
 removeOp :: Parser ()
 removeOp = T.reservedOp boltLexer "-"
-
-negateOp :: Parser Char
-negateOp = char '-'
 
 ------ SYMBOLS ------
 parens :: Parsec String u a -> Parsec String u a

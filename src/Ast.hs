@@ -4,6 +4,7 @@ module Ast
     ,   Operation (..)
     ) where
 
+
 newtype Literal = IntLit Integer deriving (Show, Eq)
 data Operation 
     = AddOp  Expression Expression
