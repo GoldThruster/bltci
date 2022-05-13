@@ -5,10 +5,14 @@ module Ast
     ) where
 
 
-newtype Literal = IntLit Integer deriving (Show, Eq)
+data Literal 
+    = IntLit  Integer
+    | BoolLit Bool
+    | StrLit  String
+    deriving (Show, Eq)
 data Operation 
     = AddOp  Expression Expression
-    | RemvOp  Expression Expression
+    | RemvOp Expression Expression
     | BindOp String     Expression
     | NegOp  Expression
     deriving (Show, Eq)

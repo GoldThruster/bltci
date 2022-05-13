@@ -4,6 +4,8 @@ module Evaluator
     ) where
 
 import Ast
+import Data.List (stripPrefix)
+import Data.Maybe
 
 reduceOp :: Operation -> Expression
 reduceOp (BindOp id val)                  = OpExpr $ BindOp id (reduce val)
@@ -26,9 +28,14 @@ eval expr = if reduced == expr then expr else eval reduced
 ----- HELPERS -----
 sumLit :: Literal -> Literal -> Literal
 sumLit (IntLit a) (IntLit b) = IntLit (a + b)
+sumLit (StrLit a) (StrLit b) = StrLit (a ++ b)
+sumLit _ _ = error "Type does not support 'add(_ + _)'"
 
 subLit :: Literal -> Literal -> Literal
 subLit (IntLit a) (IntLit b) = IntLit (a - b)
+subLit (StrLit a) (StrLit b) = StrLit (fromMaybe a (stripPrefix b a))
+subLit _ _ = error "Type does not support 'neg(_ - _)'"
 
 negLit :: Literal -> Literal
 negLit (IntLit x) = IntLit (-x)
+negLit _  = error "Type does not support 'neg(- _)'"

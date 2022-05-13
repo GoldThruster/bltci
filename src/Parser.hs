@@ -26,7 +26,11 @@ operation :: Parser Expression
 operation = E.buildExpressionParser opTable term
 
 literal :: Parser Expression
-literal = LitExpr . IntLit <$> L.integer
+literal = LitExpr <$> (
+            (IntLit  <$> L.integer)
+        <|> (BoolLit <$> L.boolean)
+        <|> (StrLit  <$> L.string')
+    )
 
 wrapped :: Parser Expression
 wrapped = L.parens expr

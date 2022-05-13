@@ -3,6 +3,8 @@ module Lexer
         identifier
         -- Literals --
     ,   integer
+    ,   boolean
+    ,   string'
         -- Operators --
     ,   equalOp
     ,   addOp
@@ -26,6 +28,12 @@ identifier = T.identifier boltLexer
 ------ LITERALS ------
 integer :: Parser Integer
 integer = T.natural boltLexer
+
+boolean :: Parser Bool
+boolean = do{string "True"; return True} <|> do {string "False"; return False}
+
+string' :: Parser String
+string' = T.stringLiteral boltLexer
 
 ------ OPERATORS ------
 equalOp :: Parser ()
@@ -53,7 +61,7 @@ boltDef = T.LanguageDef
     , T.opStart = oneOf []
     , T.opLetter = oneOf "=+"
     , T.reservedOpNames = ["=", "+", "-"]
-    , T.reservedNames = []
+    , T.reservedNames = ["True", "False"]
     , T.caseSensitive = True
     }
 
