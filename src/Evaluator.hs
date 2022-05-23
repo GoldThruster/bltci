@@ -7,21 +7,43 @@ import Ast
 import Data.List (stripPrefix)
 import Data.Maybe
 
-reduceOp :: Operation -> Expression
-reduceOp (BindOp id val)                  = OpExpr $ BindOp id (reduce val)
-reduceOp (AddOp (LitExpr a) (LitExpr b))  = LitExpr (sumLit a b)
-reduceOp (AddOp a b)                      = OpExpr $ AddOp (reduce a) (reduce b)
-reduceOp (RemvOp (LitExpr a) (LitExpr b)) = LitExpr (subLit a b)
-reduceOp (RemvOp a b)                     = OpExpr $ RemvOp (reduce a) (reduce b)
-reduceOp (NegOp (LitExpr x))              = LitExpr (negLit x)
-reduceOp (NegOp x)                        = OpExpr $ NegOp (reduce x)
+reduceOp :: Operation -> Maybe Expression
+reduceOp (BindOp id val)                  = applyReduction (OpExpr . BindOp id) val
+reduceOp (AddOp (LitExpr a) (LitExpr b))  = Just $ LitExpr (sumLit a b)
+reduceOp (AddOp a b)                      = applyReduction2 ((OpExpr .) . AddOp) a b
+reduceOp (RemvOp (LitExpr a) (LitExpr b)) = Just $ LitExpr (subLit a b)
+reduceOp (RemvOp a b)                     = applyReduction2 ((OpExpr .) . RemvOp) a b
+reduceOp (NegOp (LitExpr x))              = Just $ LitExpr (negLit x)
+reduceOp (NegOp x)                        = applyReduction (OpExpr . NegOp) x
 
-reduce :: Expression -> Expression
-reduce lit@(LitExpr _) = lit
-reduce (OpExpr op)     = reduceOp op
+
+reduce :: Expression -> Maybe Expression
+reduce lit@(LitExpr _)   = Nothing
+reduce (OpExpr op)       = reduceOp op
+reduce call@(CallExpr _) = Nothing
+
+forceReduce :: Expression -> Expression
+forceReduce expr = fromMaybe expr (reduce expr)
+
+applyReduction :: (Expression -> Expression) -> Expression -> Maybe Expression
+applyReduction func expr =
+    case reduced of
+        Nothing -> Nothing
+        Just x -> Just (func x)
+    where reduced = reduce expr
+
+applyReduction2 :: (Expression -> Expression -> Expression) -> Expression -> Expression  -> Maybe Expression
+applyReduction2 func expr0 expr1 =
+        case (reduced0, reduced1) of
+            (Nothing, Nothing) -> Nothing
+            (a, b)             -> Just $ func (final0 a) (final1 b)
+    where reduced0 = reduce expr0
+          reduced1 = reduce expr1
+          final0 = fromMaybe expr0
+          final1 = fromMaybe expr1
 
 eval :: Expression -> Expression
-eval expr = if reduced == expr then expr else eval reduced
+eval expr = maybe expr eval reduced
     where reduced = reduce expr
 
 

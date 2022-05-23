@@ -17,7 +17,7 @@ binding :: Parser Operation
 binding = do
     id <- L.identifier
     L.equalOp
-    BindOp id <$> expr
+    BindOp (Id id) <$> expr
 
 expr :: Parser Expression
 expr = (OpExpr <$> binding) <|> operation
