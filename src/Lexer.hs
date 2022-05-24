@@ -5,10 +5,12 @@ module Lexer
     ,   integer
     ,   boolean
     ,   string'
+    ,   self
         -- Operators --
     ,   equalOp
     ,   addOp
     ,   removeOp
+    ,   orOp
         -- Symbols --
     ,   parens
     ,   boltLexer
@@ -35,6 +37,9 @@ boolean = do{string "True"; return True} <|> do {string "False"; return False}
 string' :: Parser String
 string' = T.stringLiteral boltLexer
 
+self :: Parser ()
+self = do {T.symbol boltLexer "$"; return ()}
+
 ------ OPERATORS ------
 equalOp :: Parser ()
 equalOp = T.reservedOp boltLexer "="
@@ -44,6 +49,9 @@ addOp = T.reservedOp boltLexer "+"
 
 removeOp :: Parser ()
 removeOp = T.reservedOp boltLexer "-"
+
+orOp :: Parser ()
+orOp = T.reservedOp boltLexer "|"
 
 ------ SYMBOLS ------
 parens :: Parsec String u a -> Parsec String u a
@@ -59,8 +67,8 @@ boltDef = T.LanguageDef
     , T.identStart = letter <|> char '_'
     , T.identLetter = letter <|> char '_' <|> digit
     , T.opStart = oneOf []
-    , T.opLetter = oneOf "=+"
-    , T.reservedOpNames = ["=", "+", "-"]
+    , T.opLetter = oneOf []
+    , T.reservedOpNames = ["=", "+", "-", "|"]
     , T.reservedNames = ["True", "False"]
     , T.caseSensitive = True
     }

@@ -30,6 +30,7 @@ literal = LitExpr <$> (
             (IntLit  <$> L.integer)
         <|> (BoolLit <$> L.boolean)
         <|> (StrLit  <$> L.string')
+        <|> fixed SelfLit L.self
     )
 
 wrapped :: Parser Expression
@@ -39,18 +40,17 @@ term :: Parser Expression
 term = literal <|> wrapped
 
 opTable :: [[E.Operator String () Data.Functor.Identity.Identity Expression]]
-opTable = [ [prefix "-" makeNegation]
-          , [binary "+" makeAddition E.AssocLeft, binary "-" makeRemoval E.AssocLeft]
+opTable = [ [prefix "-" NegOp]
+          , [binary "+" AddOp E.AssocLeft, binary "-" RemvOp E.AssocLeft]
+          , [binary "|" OrOp  E.AssocLeft]
           ]
 
 
 ------ HELPERS ------
-makeAddition = (OpExpr .) . AddOp
+fixed what parser = do {parser; return what}
 
-makeRemoval = (OpExpr .) . RemvOp
+binary  name fun = E.Infix   (do{ T.reservedOp boltLexer name; return (wrapExprBin fun) })
+prefix  name fun = E.Prefix  (do{ T.reservedOp boltLexer name; return (OpExpr . fun) })
+postfix name fun = E.Postfix (do{ T.reservedOp boltLexer name; return (OpExpr . fun) })
 
-makeNegation = OpExpr . NegOp
-
-binary  name fun = E.Infix   (do{ T.reservedOp boltLexer name; return fun })
-prefix  name fun = E.Prefix  (do{ T.reservedOp boltLexer name; return fun })
-postfix name fun = E.Postfix (do{ T.reservedOp boltLexer name; return fun })
+wrapExprBin = ((OpExpr .) .)

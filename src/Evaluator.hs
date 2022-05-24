@@ -15,6 +15,9 @@ reduceOp (RemvOp (LitExpr a) (LitExpr b)) = Just $ LitExpr (subLit a b)
 reduceOp (RemvOp a b)                     = applyReduction2 ((OpExpr .) . RemvOp) a b
 reduceOp (NegOp (LitExpr x))              = Just $ LitExpr (negLit x)
 reduceOp (NegOp x)                        = applyReduction (OpExpr . NegOp) x
+reduceOp (OrOp a b)
+    | a == b = Just a
+    | otherwise = applyReduction2 ((OpExpr .) . OrOp) a b
 
 
 reduce :: Expression -> Maybe Expression
