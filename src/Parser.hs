@@ -19,8 +19,11 @@ binding = do
     L.equalOp
     BindOp (Id id) <$> expr
 
+call :: Parser Expression
+call = CallExpr . Id <$> L.call
+
 expr :: Parser Expression
-expr = (OpExpr <$> binding) <|> operation
+expr = (OpExpr <$> binding) <|> operation <|> term
 
 operation :: Parser Expression
 operation = E.buildExpressionParser opTable term
@@ -37,7 +40,7 @@ wrapped :: Parser Expression
 wrapped = L.parens expr
 
 term :: Parser Expression
-term = literal <|> wrapped
+term = literal <|> wrapped <|> call
 
 opTable :: [[E.Operator String () Data.Functor.Identity.Identity Expression]]
 opTable = [ [prefix "-" NegOp]

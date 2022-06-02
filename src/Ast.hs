@@ -6,7 +6,7 @@ module Ast
     ) where
 
 
-newtype Id = Id String deriving (Show, Eq)
+newtype Id = Id String deriving (Show, Eq, Ord)
 data Literal 
     = IntLit     Integer
     | BoolLit    Bool
